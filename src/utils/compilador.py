@@ -223,7 +223,7 @@ def compilar_artigo(template_path, markdown_path, output_docx, output_pdf, root_
         try:
             convert(output_docx, output_pdf)
             sucesso_pdf = True
-        except (OSError, ValueError) as exc:
+        except Exception as exc:  # noqa: BLE001
             console.print(f"[bold red]Erro ao converter DOCX para PDF com docx2pdf:[/bold red] {exc}")
 
     if not sucesso_pdf:
