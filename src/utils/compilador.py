@@ -191,6 +191,8 @@ def compilar_artigo(template_path, markdown_path, output_docx, output_pdf, root_
             run.bold = True
             p.paragraph_format.space_before = Pt(12)
             p.paragraph_format.space_after = Pt(12)
+            if "REFER" in texto_secao:
+                p.paragraph_format.page_break_before = True
 
         elif "![" in linha and "]]" in linha.replace(r"\]", "]"):
             linha_limpa = linha.replace(r"\[", "[").replace(r"\]", "]")
