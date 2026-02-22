@@ -1,5 +1,5 @@
 [project]
-name = "quantum-tripwire"
+name = "quantum-cryptography-bb84"
 version = "0.1.0"
 description = "BB84 Quantum Key Distribution: NISQ simulation and novel partial Eve attack. Targeting COBENGE 2026."
 readme = "README.md"

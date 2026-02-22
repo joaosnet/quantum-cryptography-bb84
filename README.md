@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="assets/banner.svg" alt="BB84 Quantum Key Distribution — quantum-tripwire" width="900"/>
+  <img src="assets/banner.svg" alt="BB84 Quantum Key Distribution — quantum-cryptography-bb84" width="900"/>
 </div>
 
 <div align="center">
 
-# quantum-tripwire
+# quantum-cryptography-bb84
 
 ### The laws of physics as a burglar alarm
 
@@ -190,8 +190,8 @@ This project uses [`uv`](https://docs.astral.sh/uv/) for fast, reproducible depe
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/quantum-tripwire.git
-cd quantum-tripwire
+git clone https://github.com/YOUR_USERNAME/quantum-cryptography-bb84.git
+cd quantum-cryptography-bb84
 
 # 2. Install all dependencies (Qiskit, Qiskit-Aer, Matplotlib, Rich)
 uv sync
