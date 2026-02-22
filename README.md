@@ -116,6 +116,71 @@ The noise model uses 5% depolarizing error on all single-qubit gates (`u1`, `u2`
 </details>
 
 ---
+# File Tree: Projeto Final Artigo
+
+**Generated:** 22/02/2026, 16:27:44
+**Root Path:** `g:\Meu Drive\2025_obsidian\2025.4_UFPA\COMPUTACAO QUANTICA\Projeto Final Artigo`
+
+```
+├── 📁 .ruff_cache
+│   ├── 📁 0.15.2
+│   │   ├── 📄 2202623031209042438
+│   │   └── 📄 2584423665248165622
+│   ├── ⚙️ .gitignore
+│   └── 📄 CACHEDIR.TAG
+├── 📁 assets
+│   ├── 🖼️ banner.svg
+│   └── 🖼️ bb84-protocol.svg
+├── 📁 docs
+│   ├── 📝 apresentacao.md
+│   ├── 📝 artigo.md
+│   ├── 📝 checklist.md
+│   └── 📝 objetivo.md
+├── 📁 figures
+│   ├── 📕 fig0_circuito_bb84_base.pdf
+│   ├── 📕 fig1_simulador_ideal.pdf
+│   ├── 📕 fig2_simulador_eve_total.pdf
+│   ├── 📕 fig3_hardware_natural.pdf
+│   ├── 📕 fig4_hardware_ataque_parcial.pdf
+│   ├── 📕 fig4a_circuito_nossa_proposta.pdf
+│   ├── 📕 fig5_google_cirq_parcial.pdf
+│   └── 📕 fig6_diferencas_qber.pdf
+├── 📁 papers
+│   ├── 📕 BB84-UsingPython-2022.pdf
+│   ├── 📕 BB84-With-Qiskit-IEEE-2023.pdf
+│   ├── 📕 Binary_Hermitian_matrices-QKNN-2018.pdf
+│   ├── 📕 Handwritten Digit Recognition-QKNN-2019.pdf
+│   ├── 📕 Image Classification-QKNN-2018.pdf
+│   ├── 📕 QAOA-2404.03501v1.pdf
+│   ├── 📕 QKNN - Hamming Distance-2017.pdf
+│   ├── 📕 QKNN - Hamming Distance-2021.pdf
+│   ├── 📕 QKNN-2020-v2.pdf
+│   ├── 📕 QKNN-2020-v3.pdf
+│   ├── 📕 QKNN_IBM Q Simulator-2018.pdf
+│   ├── 📕 QKNN_QisKit-2021.pdf
+│   ├── 📕 QNN_KrystaSvore-2015.pdf
+│   ├── 📕 Quantum Fingerprinting-2001.pdf
+│   ├── 📕 Quantum NETwork- from theory to practice.pdf
+│   ├── 📕 Quantum data parallelism-QNN-2025.pdf
+│   ├── 📕 Quantum internet-Science 2018.pdf
+│   ├── 📕 QuantumNeuron-(2019).pdf
+│   ├── 📕 Recommendation systems-QKNN-2019.pdf
+│   └── 📕 Review-QKNN-Small-2020.pdf
+├── 📁 src
+│   ├── 📁 utils
+│   │   └── 🐍 compilador_docx.py
+│   ├── 📄 main.ipynb
+│   └── 🐍 main.py
+├── 📁 templates
+│   ├── 📕 COBENGE-2025-Edital-ST-e-SP.pdf
+│   ├── 📘 COBENGE-2025-Template-STe-SP.docx
+│   └── 📝 README.md
+├── ⚙️ .gitignore
+├── 📘 Projeto_Final_BB84_COBENGE.docx
+├── 📝 README.md
+├── ⚙️ pyproject.toml
+└── 📄 uv.lock
+```
 
 ---
 
