@@ -65,7 +65,7 @@ except ImportError:
 
 # Criação automática da pasta de figuras para não sujar o diretório raiz
 FIGURES_DIR = (
-    pathlib.Path(__file__).parent / "figures"
+    pathlib.Path(__file__).parent.parent / "figures"
     if not IN_COLAB
     else pathlib.Path("/content/figures")
 )
