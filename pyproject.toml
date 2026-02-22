@@ -11,3 +11,12 @@ dependencies = [
     "qiskit-ibm-runtime>=0.45.1",
     "rich>=14.3.3",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+    "ruff>=0.15.2",
+]
+[tool.ruff]
+# Ignora avisos de imports fora do topo do arquivo
+ignore = ["E402"]

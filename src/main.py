@@ -7,8 +7,8 @@
 # O comando de instalação solicitado pelo Boss:
 # !pip install qiskit qiskit-aer qiskit-ibm-runtime matplotlib rich cirq pandas pylatexenc
 
-import sys
 import subprocess
+import sys
 
 # Verificação automática de ambiente (Colab vs PC Local)
 IN_COLAB = "google.colab" in sys.modules
@@ -35,29 +35,37 @@ else:
     print(
         "💻 Detectado ambiente Local (Seu PC)! Assumindo que as dependências já estão instaladas."
     )
+# %% [Importações e Configuração de Diretórios]
+try:
+    import logging
+    import pathlib
+    import time
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from qiskit import QuantumCircuit, transpile
+    from qiskit_aer import AerSimulator
+    from qiskit_aer.noise import NoiseModel, depolarizing_error
+    from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2
+    from rich.console import Console
+    from rich.live import Live
+    from rich.panel import Panel
+    from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+    from rich.prompt import Confirm
+    from rich.table import Table
+except ImportError as e:
+    print(e)
     print(
-        "Se faltar algo, rode no seu terminal: pip install qiskit qiskit-aer qiskit-ibm-runtime matplotlib rich cirq pandas"
+        "Se faltou algo, rode no seu terminal: pip install qiskit qiskit-aer qiskit-ibm-runtime matplotlib rich cirq pandas"
     )
 
-# %% [Importações e Configuração de Diretórios]
-from qiskit import QuantumCircuit, transpile
-from qiskit_aer import AerSimulator
-from qiskit_aer.noise import NoiseModel, depolarizing_error
-from qiskit_ibm_runtime import QiskitRuntimeService
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
-from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
-from rich.prompt import Confirm
-from rich.live import Live
-import pathlib
-import numpy as np
-import matplotlib.pyplot as plt
-import time
+
+# Silenciar os warnings chatos da API da IBM para um terminal limpo
+logging.getLogger("qiskit_ibm_runtime").setLevel(logging.ERROR)
 
 # Importação do Ecossistema Google (Cirq)
 try:
-    import cirq
+    import cirq  # type: ignore
 
     CIRQ_DISPONIVEL = True
 except ImportError:
@@ -96,16 +104,20 @@ if USAR_HARDWARE_REAL_IBM:
         "🔑 Cole o seu Token da IBM Quantum aqui (o texto ficará invisível por segurança): "
     )
 
-    console.print("[yellow]A autenticar nos servidores da IBM Quantum...[/yellow]")
-    service = QiskitRuntimeService(channel="ibm_quantum", token=MEU_TOKEN_IBM)
+    # Novo feedback visual para o tempo de carregamento com a nuvem da IBM
+    with console.status(
+        "[bold yellow]A contornar o firewall da IBM e procurar o hardware quântico com a menor fila...[/bold yellow]",
+        spinner="earth",
+    ):
+        service = QiskitRuntimeService(
+            channel="ibm_quantum_platform", token=MEU_TOKEN_IBM
+        )
+        backend_real_ibm = service.least_busy(
+            operational=True, simulator=False, min_num_qubits=4
+        )
+
     console.print(
-        "[yellow]A procurar o computador quântico com a menor fila global...[/yellow]"
-    )
-    backend_real_ibm = service.least_busy(
-        operational=True, simulator=False, min_num_qubits=4
-    )
-    console.print(
-        f"[bold green]✔ Alvo fixado! Usaremos o hardware: {backend_real_ibm.name}[/bold green]\n"
+        f"[bold green]✔ Infiltração concluída! Alvo fixado no hardware: {backend_real_ibm.name}[/bold green]\n"
     )
 else:
     console.print(
@@ -164,11 +176,22 @@ def criar_modelo_ruido_hardware():
 def simular_circuito(qc, shots=4096, usar_ruido=False, forcado_na_ibm=False):
     """Executa o circuito (Simulador Ideal, Simulador com Ruído ou Hardware Real)"""
     if forcado_na_ibm and backend_real_ibm is not None:
+        # Transpila o circuito para o chip real selecionado
         circuito_compilado = transpile(qc, backend_real_ibm)
-        job = backend_real_ibm.run(circuito_compilado, shots=shots)
-        # O terminal vai ficar girando o Qubit em ASCII Art enquanto espera!
+
+        # O backend.run() foi morto pela IBM. Usamos o SamplerV2 agora!
+        sampler = SamplerV2(mode=backend_real_ibm)
+        sampler.options.default_shots = shots
+
+        job = sampler.run([circuito_compilado])
+        # A thread do Live continuará girando a pixel art no terminal enquanto espera a resposta
         resultado = job.result()
-        return resultado.get_counts()
+
+        # Extrai o nome do registro clássico gerado para pegar as probabilidades certas no novo V2
+        creg_name = circuito_compilado.cregs[0].name
+        pub_result = resultado[0]
+        return getattr(pub_result.data, creg_name).get_counts()
+
     else:
         simulador = AerSimulator(
             noise_model=criar_modelo_ruido_hardware() if usar_ruido else None
@@ -251,7 +274,7 @@ def plot_estilo_ieee(contagens, shots, titulo, nome_ficheiro, cor="#6495ED"):
     plt.ylabel("Probabilidades", fontsize=12, fontweight="bold")
     plt.title(titulo, fontsize=14, pad=15)
     limite_y = max(valores) + 0.15
-    plt.ylim(0, limite_y if limite_y <= 1.1 else 1.1)
+    plt.ylim(0, min(limite_y, 1.1))
     plt.xticks(rotation=45, ha="right")
     plt.grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -553,3 +576,4 @@ console.print(tabela_resumo)
 console.print(
     f"\n[bold green]✔ Todos os cálculos foram finalizados e salvos em {FIGURES_DIR}![/bold green]"
 )
+# %% 
