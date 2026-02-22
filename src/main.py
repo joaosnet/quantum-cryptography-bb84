@@ -16,20 +16,22 @@ IN_COLAB = "google.colab" in sys.modules
 if IN_COLAB:
     print("🌐 Detectado ambiente Google Colab! Instalando as dependências pesadas...")
     # Executa a instalação via subprocess para manter a compatibilidade como script Python puro
-    subprocess.check_call([
-        sys.executable,
-        "-m",
-        "pip",
-        "install",
-        "qiskit",
-        "qiskit-aer",
-        "qiskit-ibm-runtime",
-        "matplotlib",
-        "rich",
-        "cirq",
-        "pandas",
-        "pylatexenc",
-    ])
+    subprocess.check_call(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "qiskit",
+            "qiskit-aer",
+            "qiskit-ibm-runtime",
+            "matplotlib",
+            "rich",
+            "cirq",
+            "pandas",
+            "pylatexenc",
+        ]
+    )
     print("✅ Todas as bibliotecas quânticas foram instaladas e injetadas no Colab!")
 else:
     print(
@@ -247,9 +249,9 @@ def simular_google_cirq_parcial(bits_a, bases_a, bases_b, bases_e, shots=4096):
 
     contagens = {}
     for i in range(shots):
-        bit_string = "".join([
-            str(resultado.measurements[f"bob_{q}"][i][0]) for q in [3, 2, 1, 0]
-        ])
+        bit_string = "".join(
+            [str(resultado.measurements[f"bob_{q}"][i][0]) for q in [3, 2, 1, 0]]
+        )
         contagens[bit_string] = contagens.get(bit_string, 0) + 1
 
     return contagens
@@ -576,4 +578,4 @@ console.print(tabela_resumo)
 console.print(
     f"\n[bold green]✔ Todos os cálculos foram finalizados e salvos em {FIGURES_DIR}![/bold green]"
 )
-# %% 
+# %%
