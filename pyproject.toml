@@ -8,5 +8,6 @@ dependencies = [
     "matplotlib>=3.10.8",
     "qiskit>=2.3.0",
     "qiskit-aer>=0.17.2",
+    "qiskit-ibm-runtime>=0.45.1",
     "rich>=14.3.3",
 ]
