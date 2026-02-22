@@ -117,48 +117,6 @@ The noise model uses 5% depolarizing error on all single-qubit gates (`u1`, `u2`
 
 ---
 
-## Project Structure
-
-```
-quantum-tripwire/
-├── README.md
-├── pyproject.toml               ← uv project (Qiskit 2.3, Qiskit-Aer 0.17, Rich, Matplotlib)
-├── uv.lock
-├── .gitignore
-├── .python-version              ← Python 3.12
-│
-├── assets/
-│   ├── banner.svg               ← Animated quantum channel (Alice → Eve → Bob)
-│   └── bb84-protocol.svg        ← Protocol reference infographic
-│
-├── src/
-│   └── main.py                  ← 4 experiment scenarios, generates 7 PDFs
-│
-├── figures/                     ← All generated output (run main.py to regenerate)
-│   ├── fig0_circuito_bb84_base.pdf
-│   ├── fig1_simulador_ideal.pdf
-│   ├── fig2_simulador_eve_total.pdf
-│   ├── fig3_hardware_natural.pdf
-│   ├── fig4_hardware_ataque_parcial.pdf
-│   ├── fig4a_circuito_nossa_proposta.pdf
-│   └── fig5_diferencas_qber.pdf
-│
-├── docs/
-│   ├── artigo.md                ← Full article draft (COBENGE format)
-│   ├── apresentacao.md          ← 15-slide presentation script
-│   ├── objetivo.md              ← Professor's original assignment
-│   └── checklist.md             ← Project checklist
-│
-├── templates/
-│   ├── COBENGE-2025-Edital-ST-e-SP.pdf
-│   └── COBENGE-2025-Template-STe-SP.docx
-│
-└── papers/
-    ├── BB84-With-Qiskit-IEEE-2023.pdf     ← Base paper (Saeed et al.)
-    ├── BB84-UsingPython-2022.pdf
-    └── ... (19 more reference PDFs)
-```
-
 ---
 
 ## How to Run
