@@ -1,0 +1,12 @@
+[project]
+name = "quantum-tripwire"
+version = "0.1.0"
+description = "BB84 Quantum Key Distribution: NISQ simulation and novel partial Eve attack. Targeting COBENGE 2026."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "qiskit>=2.3.0",
+    "qiskit-aer>=0.17.2",
+    "rich>=14.3.3",
+]
