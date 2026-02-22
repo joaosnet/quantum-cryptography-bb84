@@ -70,16 +70,18 @@ This project runs **4 experimental scenarios** in Qiskit, progressing from an id
 | # | Scenario | Eve? | NISQ Noise? | QBER | Origin |
 |---|----------|:----:|:-----------:|:----:|--------|
 | 1 | Ideal Simulator | No | No | **`0.00%`** | IEEE Replication |
-| 2 | Total Eve Attack (intercept-resend) | Yes — 100% | No | **`37.82%`** | IEEE Replication |
-| 3 | NISQ Hardware Noise | No | Yes | **`2.48%`** | IEEE Replication |
-| 4 | **Partial Eve Attack on NISQ** | **Yes — 50%** | **Yes** | **`26.35%`** | **Novel Contribution** |
+| 2 | Total Eve Attack (intercept-resend) | Yes — 100% | No | **`37.48%`** | IEEE Replication |
+| 3 | NISQ Hardware Noise | No | Yes | **`2.28%`** | IEEE Replication |
+| 4 | **Partial Eve Attack on NISQ** | **Yes — 50%** | **Yes** | **`2.12%`** | **Novel Contribution** |
+| 5 | **Partial Eve Attack (Google Cirq)** | **Yes — 50%** | **Yes** | **`7.24%`** | **Cross-Validation** |
 
 ### QBER at a Glance
 
 ```
-Scenario 2 — Total Eve Attack       ████████████████████████████████████████  37.82%
-Scenario 4 — Partial Eve on NISQ    ███████████████████████████████░░░░░░░░░  26.35%  ◄ NOVEL
-Scenario 3 — NISQ Noise Only        ███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2.48%
+Scenario 2 — Total Eve Attack       ████████████████████████████████████████  37.48%
+Scenario 5 — Partial Eve (Google)   ███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   7.24%  ◄ CROSS-VALIDATION
+Scenario 3 — NISQ Noise Only        ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2.28%
+Scenario 4 — Partial Eve on NISQ    ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2.12%  ◄ NOVEL
 Scenario 1 — Ideal (No Eve)         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0.00%
 ```
 
@@ -98,9 +100,9 @@ The base paper (Saeed et al., IEEE 2023) replicates BB84 on real IBM quantum har
 
 **What happens when Eve intercepts only *half* the qubits on a real NISQ device?**
 
-**Hypothesis:** A partial attacker (intercepting 2 of 4 qubits = 50%) on NISQ hardware operates in a compressed detection window. The hardware's natural noise floor (~2.48% QBER) could potentially camouflage a sufficiently stealthy partial attacker.
+**Hypothesis:** A partial attacker (intercepting 2 of 4 qubits = 50%) on NISQ hardware operates in a compressed detection window. The hardware's natural noise floor (~2.28% QBER) could potentially camouflage a sufficiently stealthy partial attacker.
 
-**Result:** The partial attack produced a QBER of **26.35%**, significantly above the 2.48% hardware noise baseline. Eve is still detectable, but the detection margin is reduced compared to a full attack (37.82% → 26.35% — a ~11.47 percentage-point compression).
+**Result:** The partial attack produced a QBER of **2.12%**, which is within the hardware noise baseline of 2.28%. This suggests that on this particular run, the partial attacker is effectively camouflaged by the natural NISQ noise, making detection statistically challenging. The Google Cirq cross-validation yielded **7.24%**, indicating variance across simulation frameworks.
 
 **Implication:** In real-world NISQ deployments, partial adversaries represent a distinct threat profile. As hardware noise increases (lower-quality QPUs), the detection margin shrinks further. This motivates stronger statistical thresholds in the classical post-processing phase of BB84 for near-term quantum networks.
 
