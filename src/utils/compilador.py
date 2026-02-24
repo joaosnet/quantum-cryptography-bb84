@@ -40,14 +40,49 @@ def limpar_documento(doc):
         tbl.getparent().remove(tbl)
 
 
+def latex_para_unicode(formula):
+    """Converte LaTeX inline simples para Unicode legível no DOCX/PDF."""
+    f = formula
+    # Remove chaves protetoras em kets: |{+}⟩ -> |+⟩, |{-}⟩ -> |-⟩
+    f = re.sub(r"\|\{([^}]+)\}", r"|\1", f)
+    # Letras gregas e símbolos
+    replacements = [
+        (r"\\alpha", "α"),
+        (r"\\beta", "β"),
+        (r"\\psi", "ψ"),
+        (r"\\times", "×"),
+        (r"\\sqrt\{2\}", "√2"),
+        (r"\\sqrt2", "√2"),
+        (r"\\rangle", "⟩"),
+        (r"\\langle", "⟨"),
+        (r"\\\{", "{"),
+        (r"\\\}", "}"),
+    ]
+    for pat, rep in replacements:
+        f = re.sub(pat, rep, f)
+    # Superescritos: ^2 -> ², ^{2} -> ², ^n -> ⁿ
+    sup_map = {
+        "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
+        "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "n": "ⁿ",
+    }
+    return re.sub(
+        r"\^\{?([0-9n])\}?",
+        lambda m: sup_map.get(m.group(1), m.group(0)),
+        f,
+    )
+
+
 def adicionar_texto_markdown(paragraph, texto):
-    partes = re.split(r"(\*\*.*?\*\*|\*[^*]+\*)", texto)
+    partes = re.split(r"(\*\*.*?\*\*|\*[^*]+\*|\$[^$]+\$)", texto)
     for parte in partes:
         if parte.startswith("**") and parte.endswith("**"):
             run = paragraph.add_run(parte[2:-2])
             run.bold = True
         elif parte.startswith("*") and parte.endswith("*"):
             run = paragraph.add_run(parte[1:-1])
+            run.italic = True
+        elif parte.startswith("$") and parte.endswith("$"):
+            run = paragraph.add_run(latex_para_unicode(parte[1:-1]))
             run.italic = True
         else:
             run = paragraph.add_run(parte)

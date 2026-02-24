@@ -1,10 +1,8 @@
 AN ANALYSIS OF QKD BB84 PROTOCOL IMPLEMENTATION OVER REAL IBM QUANTUM PROCESSORS VS. SIMULATION (UMA ANÁLISE DA IMPLEMENTAÇÃO DO PROTOCOLO QKD BB84 EM PROCESSADORES QUÂNTICOS REAIS IBM VS. SIMULAÇÃO)
 
-João da Cruz de Natividade e Silva Neto¹, Alydson de Araujo Lustoza², Wilson Ricardo Matos Rabelo³
+João da Cruz de Natividade e Silva Neto¹, Alydson de Araujo Lustoza²
 
 ¹² Universidade Federal do Pará (UFPA), Belém, Pará, Brasil. joao.silva.neto@itec.ufpa.br; Alydsonlustoza@gmail.com
-
-³ Universidade Federal do Pará (UFPA), Belém, Pará, Brasil. rabelo@ufpa.br
 
 ## RESUMO
 
@@ -24,7 +22,17 @@ A base da segurança da informação moderna está ancorada em problemas matemá
 
 Este trabalho tem como objetivo central reproduzir e analisar a implementação proposta no artigo "An Analysis of QKD BB84 Protocol Implementation over Real IBM Quantum Processors vs. Simulation", de Saeed et al. (2023). Nossa proposta é demonstrar, na prática, como ocorre a troca de chaves criptográficas utilizando o protocolo BB84 e evidenciar como a presença de um interceptador (Eve) é naturalmente detectada pelo colapso da função de onda.
 
-## 2 METODOLOGIA
+## 2 FUNDAMENTAÇÃO TEÓRICA
+
+Para compreender o funcionamento do protocolo BB84, é necessário estabelecer os fundamentos físico-quânticos que o sustentam. Ao contrário do bit clássico, que assume o valor 0 ou 1 de forma determinística, o qubit pode existir em superposição de ambos os estados simultaneamente, representado pelo estado geral $|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$, onde $\alpha$ e $\beta$ são amplitudes complexas que satisfazem $|\alpha|^2 + |\beta|^2 = 1$. Apenas no momento da medição o estado colapsa irreversivelmente para um dos valores clássicos, com probabilidades $|\alpha|^2$ e $|\beta|^2$, respectivamente.
+
+O protocolo BB84 fundamenta-se na existência de duas bases de medição mutuamente não-ortogonais. A base retilínea ($+$) utiliza os estados computacionais $\{|0\rangle, |1\rangle\}$, enquanto a base diagonal ($\times$) utiliza os estados superpostos $\{|{+}\rangle, |{-}\rangle\}$, onde $|{+}\rangle = (|0\rangle + |1\rangle)/\sqrt{2}$ e $|{-}\rangle = (|0\rangle - |1\rangle)/\sqrt{2}$. A transição entre essas duas bases é realizada pela porta Hadamard (H): aplicada sobre $|0\rangle$, produz $|{+}\rangle$; aplicada sobre $|1\rangle$, produz $|{-}\rangle$; e, inversamente, aplicada sobre um estado da base diagonal, devolve o estado computacional correspondente. Quando Bob mede um qubit em uma base diferente da usada por Alice para codificá-lo, o resultado é completamente aleatório, com **50%** de probabilidade de erro.
+
+A segurança do protocolo baseia-se em dois pilares da mecânica quântica. O Teorema da Não-Clonagem, demonstrado por Wootters e Zurek (1982), estabelece que é impossível criar uma cópia perfeita de um estado quântico desconhecido sem perturbá-lo. Complementarmente, o Princípio da Incerteza de Heisenberg garante que a tentativa de medir o estado de um qubit em uma base qualquer perturba irreversivelmente sua informação na base conjugada. Em conjunto, esses dois princípios tornam qualquer tentativa de interceptação fisicamente detectável: ao tentar medir os qubits em trânsito, Eve inevitavelmente altera seus estados, introduzindo erros mensuráveis na chave final.
+
+O protocolo BB84 implementado em circuito quântico opera em quatro etapas. Na preparação, Alice inicializa $n$ registradores quânticos e clássicos. Cada bit clássico da sua chave secreta é codificado como qubit: o valor 0 é mapeado para o estado $|0\rangle$ e o valor 1 para o estado $|1\rangle$. Em seguida, portas Hadamard são aplicadas aleatoriamente em aproximadamente 50% dos qubits, transferindo-os da base retilínea para a base diagonal e compondo a sequência de bases de Alice. Na interceptação, o circuito de Eve insere medições em bases escolhidas aleatoriamente. Essa operação é fisicamente irreversível: ao medir, Eve força o colapso da função de onda, destruindo a superposição original. Como consequência direta do Teorema da Não-Clonagem e do Princípio da Incerteza, Eve não pode copiar os estados antes de medi-los tampouco restaurá-los ao estado original após a medição, tornando sua presença detectável por meio do aumento da QBER. Na medição, Bob aplica portas Hadamard nos qubits onde decidiu usar a base diagonal. Todos os qubits passam então por operadores de medição, colapsando os estados quânticos em bits clássicos armazenados nos registradores. Por fim, na reconciliação, Alice e Bob comparam publicamente as bases que utilizaram, via canal clássico autenticado. Os bits cujas bases não coincidem são descartados (processo de sifting), pois não carregam informação confiável. A taxa de erro dos bits restantes é calculada como a QBER; se esse valor ultrapassar o limiar estabelecido (neste trabalho, adotamos **0,11**, ou seja, **11%**), conclui-se que o canal foi comprometido, o circuito é descartado e o processo reiniciado desde o início. Caso contrário, os bits sobreviventes ao sifting formam a chave criptográfica compartilhada.
+
+## 3 METODOLOGIA
 
 Para colocar o experimento em prática e responder às questões estruturais da pesquisa, adotamos o ecossistema da IBM. Toda a nossa implementação foi desenvolvida na linguagem Python, utilizando o framework Qiskit, dispensando o uso de interfaces visuais arrastar-e-soltar, a fim de termos controle total sobre as lógicas de automação e medição.
 
@@ -36,7 +44,7 @@ Para testar a resiliência do modelo, rodamos o experimento em múltiplos cenár
 
 ![[figures/fig4a_circuito_nossa_proposta.pdf|Figura 2: Diagrama do circuito evidenciando a interceptação parcial (Ataque nas linhas 0 e 1).]]
 
-## 3 RESULTADOS E DISCUSSÃO
+## 4 RESULTADOS E DISCUSSÃO
 
 Ao executar nosso código no simulador clássico sem qualquer interferência externa, o comportamento da distribuição de chaves foi perfeito. A probabilidade de leitura correta do estado foi cravada em 100%.
 
@@ -62,7 +70,7 @@ O gráfico final sumariza o impacto do QBER em cada etapa, comprovando nossa tes
 
 ![[figures/fig6_diferencas_qber.pdf|Figura 8: Comparativo de Erro (QBER) demonstrando a camuflagem do Ataque Parcial no ruído NISQ.]]
 
-## 4 CONCLUSÃO
+## 5 CONCLUSÃO
 
 Fica claro que o protocolo BB84 é perfeitamente executável por meio de frameworks modernos. Conseguimos resolver o problema central da distribuição segura de chaves, provando que a própria física atua como o sistema de alarme contra interceptações pesadas.
 
