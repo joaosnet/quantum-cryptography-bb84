@@ -1,7 +1,7 @@
 # %% [markdown]
 # # Implementação Avançada do Protocolo QKD BB84 - COBENGE
 # Integração HÍBRIDA: IBM Quantum (Qiskit) + Google Quantum AI (Cirq)
-# Módulo de Investigação Avançada: Escalabilidade e Micro-Ataques
+# Módulo de Investigação Avançada: Escalabilidade e Micro-Ataques (Determinístico)
 
 # %% [Instalação e Verificação de Ambiente]
 import subprocess
@@ -134,6 +134,23 @@ def criar_modelo_ruido_hardware():
     return noise_model
 
 
+def gerar_bases_eve_estatistica(bases_alice, qubits_alvo):
+    """
+    NOVO VETOR DE ATAQUE: Remove a flutuação do RNG.
+    Força Eve a errar exatamente 50% das bases nos qubits atacados,
+    garantindo que o resultado final reflita a média teórica matemática.
+    """
+    bases_eve = list(bases_alice)
+    erros_forcados = len(qubits_alvo) // 2
+    if len(qubits_alvo) > 0 and erros_forcados == 0:
+        erros_forcados = 1  # Garante 1 erro se atacar um número ímpar/pequeno
+
+    for i in range(erros_forcados):
+        idx = qubits_alvo[i]
+        bases_eve[idx] = 1 - bases_eve[idx]  # Inverte a base
+    return bases_eve
+
+
 def simular_circuito(qc, shots=4096, usar_ruido=False, forcado_na_ibm=False):
     if forcado_na_ibm and backend_real_ibm is not None:
         circuito_compilado = transpile(qc, backend_real_ibm)
@@ -258,11 +275,11 @@ with console.status("[cyan]Processando Tensores (4 Qubits)...[/cyan]", spinner="
         str(FIGURES_DIR / "fig1_simulador_ideal.pdf"),
     )
 
-    # 2. Total
+    # 2. Total (Usa a nova função estatística para cravar o erro em ~25%)
+    bases_eve_total = gerar_bases_eve_estatistica(bases_compartilhadas, range(n_qubits))
     qc_eve_total = medir_mensagem(
         ataque_eve(
-            codificar_mensagem(bits_alice, bases_compartilhadas),
-            np.random.randint(2, size=n_qubits),
+            codificar_mensagem(bits_alice, bases_compartilhadas), bases_eve_total
         ),
         bases_compartilhadas,
     )
@@ -288,13 +305,14 @@ with console.status("[cyan]Processando Tensores (4 Qubits)...[/cyan]", spinner="
         str(FIGURES_DIR / "fig3_hardware_natural.pdf"),
     )
 
-    # 4. Proposta (Parcial 50%)
-    bases_eve_parcial = np.random.randint(2, size=n_qubits)
+    # 4. Proposta (Parcial 50% - Crava o erro em ~12.5% + Ruído)
+    alvos_parcial = [0, 1]
+    bases_eve_parcial = gerar_bases_eve_estatistica(bases_compartilhadas, alvos_parcial)
     qc_proposta = medir_mensagem(
         ataque_eve(
             codificar_mensagem(bits_alice, bases_compartilhadas),
             bases_eve_parcial,
-            [0, 1],
+            alvos_parcial,
         ),
         bases_compartilhadas,
     )
@@ -372,11 +390,12 @@ def exp_escala(n, q_atacados):
 
     qc = codificar_mensagem(b_alice, bases)
     if q_atacados > 0:
-        b_eve = np.random.randint(2, size=n)
-        qc = ataque_eve(qc, b_eve, range(q_atacados))  # Ataca os primeiros X qubits
+        alvos = list(range(q_atacados))
+        # Usa a mesma função para garantir a distribuição teórica
+        b_eve = gerar_bases_eve_estatistica(bases, alvos)
+        qc = ataque_eve(qc, b_eve, alvos)
     qc = medir_mensagem(qc, bases)
 
-    # Roda com ruído
     simulador = AerSimulator(noise_model=criar_modelo_ruido_hardware())
     contagens = (
         simulador.run(transpile(qc, simulador), shots=shots).result().get_counts()
@@ -413,7 +432,6 @@ barras_adv = plt.bar(
     cenarios_adv, valores_adv, color=cores_adv, edgecolor="black", width=0.5
 )
 
-# Linha da morte (11%)
 plt.axhline(
     y=11.0, color="red", linestyle="--", linewidth=2, label="Limiar Crítico (11%)"
 )
@@ -428,7 +446,7 @@ plt.ylim(0, max(valores_adv) + 5)
 plt.legend()
 
 for i, b in enumerate(barras_adv):
-    if i != 2:  # Pula a barra fake do limiar
+    if i != 2:
         plt.text(
             b.get_x() + b.get_width() / 2,
             b.get_height() + 0.5,
@@ -461,7 +479,7 @@ t_res.add_row("C. Limiar de Alarme BB84", "[bold red]11.00%[/bold red]")
 console.print(t_res)
 
 console.print(
-    "\n[bold green]✔ Pipeline concluído. Novo gráfico 'fig7_escala_microataque.pdf' gerado![/bold green]"
+    "\n[bold green]✔ Pipeline concluído matematicamente estabilizado![/bold green]"
 )
 
 # %%

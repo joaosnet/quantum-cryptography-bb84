@@ -1,6 +1,7 @@
 # Script de automação para injetar Markdown no DOCX do COBENGE e converter para PDF
 # Dependências: pip install python-docx markdown PyMuPDF rich docx2pdf
 
+import glob
 import os
 import re
 import shutil
@@ -98,6 +99,21 @@ def aplicar_estilo_paragrafo_cobenge(paragraph):
     paragraph.paragraph_format.line_spacing = 1.0
 
 
+def resolver_caminho_figura(caminho):
+    """Resolve o caminho real de uma figura, tratando sufixos -N gerados por exportadores."""
+    if os.path.exists(caminho):
+        return caminho
+    base, ext = os.path.splitext(caminho)
+    candidatos = glob.glob(f"{base}-*{ext}")
+    if len(candidatos) == 1:
+        console.print(
+            f"[yellow]Aviso:[/yellow] '{os.path.basename(caminho)}' não encontrado. "
+            f"Usando '{os.path.basename(candidatos[0])}' como substituto."
+        )
+        return candidatos[0]
+    return caminho
+
+
 def converter_pdf_para_png(caminho_pdf):
     if not PYMUPDF_INSTALADO:
         console.print(
@@ -125,6 +141,7 @@ def converter_pdf_para_png(caminho_pdf):
 
 
 def inserir_imagem(doc, caminho_imagem, legenda):
+    caminho_imagem = resolver_caminho_figura(caminho_imagem)
     if caminho_imagem.lower().endswith(".pdf"):
         caminho_imagem = converter_pdf_para_png(caminho_imagem)
 
